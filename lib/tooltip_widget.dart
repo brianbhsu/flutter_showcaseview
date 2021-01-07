@@ -77,6 +77,7 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
   double _paddingTop;
   double _paddingBottom;
   Offset position;
+  double _width;
 
   bool isCloseToTopOrBottom(Offset position) {
     double height = 120;
@@ -137,17 +138,16 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
 
   double _getLeft() {
     if (_isLeft()) {
-      double leftPadding =
-          widget.position.getCenter() - (_getTooltipWidth() * 0.1);
-      if (leftPadding + _getTooltipWidth() > widget.screenSize.width) {
-        leftPadding = (widget.screenSize.width - 20) - _getTooltipWidth();
+      double leftPadding = widget.position.getCenter() - (_width * 0.1);
+      if (leftPadding + _width > widget.screenSize.width) {
+        leftPadding = (widget.screenSize.width - 20) - _width;
       }
       if (leftPadding < 20) {
         leftPadding = 14;
       }
       return leftPadding;
     } else if (!(_isRight())) {
-      return widget.position.getCenter() - (_getTooltipWidth() * 0.5);
+      return widget.position.getCenter() - (_width * 0.5);
     } else {
       return null;
     }
@@ -155,14 +155,13 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
 
   double _getRight() {
     if (_isRight()) {
-      double rightPadding =
-          widget.position.getCenter() + (_getTooltipWidth() / 2);
-      if (rightPadding + _getTooltipWidth() > widget.screenSize.width) {
+      double rightPadding = widget.position.getCenter() + (_width / 2);
+      if (rightPadding + _width > widget.screenSize.width) {
         rightPadding = 14;
       }
       return rightPadding;
     } else if (!(_isLeft())) {
-      return widget.position.getCenter() - (_getTooltipWidth() * 0.5);
+      return widget.position.getCenter() - (_width * 0.5);
     } else {
       return null;
     }
@@ -209,6 +208,8 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
       _paddingBottom = 10;
     }
 
+    _width = _getTooltipWidth();
+
     if (widget.container == null) {
       return Stack(
         children: <Widget>[
@@ -234,7 +235,7 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
                       child: GestureDetector(
                         onTap: widget.onTooltipTap,
                         child: Container(
-                          width: _getTooltipWidth(),
+                          width: _width,
                           padding: widget.contentPadding,
                           color: widget.tooltipColor,
                           child: Column(
