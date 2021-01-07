@@ -102,7 +102,12 @@ class _MailPageState extends State<MailPage> {
                             title: 'Profile',
                             description:
                                 'Tap to see profile which contains user\'s name, profile picture, mobile number and country',
-                            contentPadding: EdgeInsets.all(8.0),
+                            contentPadding: EdgeInsets.only(
+                              top: 8,
+                              bottom: 8,
+                              left: 20,
+                              right: 20,
+                            ),
                             showcaseBackgroundColor: Colors.blueAccent,
                             textColor: Colors.white,
                             shapeBorder: CircleBorder(),

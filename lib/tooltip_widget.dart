@@ -72,6 +72,10 @@ class ToolTipWidget extends StatefulWidget {
 }
 
 class _ToolTipWidgetState extends State<ToolTipWidget> {
+  TextStyle _titleTextStyle;
+  TextStyle _descriptionTextStyle;
+  double _paddingTop;
+  double _paddingBottom;
   Offset position;
 
   bool isCloseToTopOrBottom(Offset position) {
@@ -89,13 +93,35 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
   }
 
   double _getTooltipWidth() {
-    double titleLength = widget.title == null ? 0 : widget.title.length * 10.0;
-    double descriptionLength = widget.description.length * 7.0;
-    var maxTextWidth = max(titleLength, descriptionLength);
+    final titleLength = widget.title != null
+        ? (TextPainter(
+                text: TextSpan(text: widget.title, style: _titleTextStyle),
+                maxLines: 1,
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textDirection: TextDirection.ltr)
+              ..layout())
+            .size
+            .width
+        : 0;
+
+    final descriptionLength = (TextPainter(
+            text: TextSpan(
+                text: widget.description, style: _descriptionTextStyle),
+            maxLines: 1,
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textDirection: TextDirection.ltr)
+          ..layout())
+        .size
+        .width;
+
+    var maxTextWidth = max(titleLength, descriptionLength) +
+        widget.contentPadding.left +
+        widget.contentPadding.right;
+
     if (maxTextWidth > widget.screenSize.width - 20) {
       return widget.screenSize.width - 20;
     } else {
-      return maxTextWidth + 15;
+      return maxTextWidth;
     }
   }
 
@@ -170,12 +196,17 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
 
     final contentFractionalOffset = contentOffsetMultiplier.clamp(-1.0, 0.0);
 
-    double paddingTop = ToolTipWidget.isArrowUp ? 22 : 0;
-    double paddingBottom = ToolTipWidget.isArrowUp ? 0 : 27;
+    _paddingTop = ToolTipWidget.isArrowUp ? 22 : 0;
+    _paddingBottom = ToolTipWidget.isArrowUp ? 0 : 27;
+
+    _titleTextStyle = widget.titleTextStyle ??
+        Theme.of(context).textTheme.headline6.apply(color: widget.textColor);
+    _descriptionTextStyle = widget.descTextStyle ??
+        Theme.of(context).textTheme.subtitle2.apply(color: widget.textColor);
 
     if (!widget.showArrow) {
-      paddingTop = 10;
-      paddingBottom = 10;
+      _paddingTop = 10;
+      _paddingBottom = 10;
     }
 
     if (widget.container == null) {
@@ -196,8 +227,8 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
                 child: Material(
                   color: Colors.transparent,
                   child: Container(
-                    padding:
-                        EdgeInsets.only(top: paddingTop, bottom: paddingBottom),
+                    padding: EdgeInsets.only(
+                        top: _paddingTop, bottom: _paddingBottom),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: GestureDetector(
@@ -218,23 +249,12 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
                                     widget.title != null
                                         ? Text(
                                             widget.title,
-                                            style: widget.titleTextStyle ??
-                                                Theme.of(context)
-                                                    .textTheme
-                                                    .headline6
-                                                    .merge(TextStyle(
-                                                        color:
-                                                            widget.textColor)),
+                                            style: _titleTextStyle,
                                           )
                                         : Container(),
                                     Text(
                                       widget.description,
-                                      style: widget.descTextStyle ??
-                                          Theme.of(context)
-                                              .textTheme
-                                              .subtitle2
-                                              .merge(TextStyle(
-                                                  color: widget.textColor)),
+                                      style: _descriptionTextStyle,
                                     ),
                                   ],
                                 ),
@@ -272,7 +292,7 @@ class _ToolTipWidgetState extends State<ToolTipWidget> {
                     onTap: widget.onTooltipTap,
                     child: Container(
                       padding: EdgeInsets.only(
-                        top: paddingTop,
+                        top: _paddingTop,
                       ),
                       color: Colors.transparent,
                       child: Center(
