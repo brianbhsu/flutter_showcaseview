@@ -155,6 +155,8 @@ class _MailPageState extends State<MailPage> {
                     key: _three,
                     description: 'Tap to check mail',
                     disposeOnTap: true,
+                    shapeBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                     onTargetClick: () {
                       Navigator.push(
                         context,
